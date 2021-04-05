@@ -9,8 +9,6 @@
 #include <spdlog/fwd.h>
 #include <dpp/discordclient.h>
 #include <dpp/queues.h>
-#include <dpp/invite.h>
-#include <dpp/dtemplate.h>
 
 using  json = nlohmann::json;
 
@@ -37,7 +35,9 @@ typedef std::variant<
 		invite,
 		invite_map,
 		dtemplate,
-		dtemplate_map
+		dtemplate_map,
+		emoji,
+		emoji_map
 	> confirmable_t;
 
 struct confirmation_callback_t {
@@ -221,6 +221,9 @@ public:
 
 	void channel_invites_get(const class channel &c, command_completion_event_t callback);
 
+	/** Create invite for a channel */
+	void channel_invite_create(const class channel &c, const class invite &i, command_completion_event_t callback);
+
 	/** Get a channel's pins */
 	void pins_get(snowflake channel_id, command_completion_event_t callback);
 
@@ -230,29 +233,44 @@ public:
 	/** Removes a recipient from a Group DM */
 	void gdm_remove(snowflake channel_id, snowflake user_id, command_completion_event_t callback);
 
+	/** Remove a permission from a channel */
+	void channel_delete_permission(const class channel &c, snowflake overwrite_id, command_completion_event_t callback);
+
+	/** Follow a news channel */
+	void channel_follow_news(const class channel &c, snowflake target_channel_id, command_completion_event_t callback);
+
+	/** Trigger channel typing indicator */
+	void channel_typing(const class channel &c, command_completion_event_t callback);
+
+	/** Pin a message */
+	void message_pin(snowflake channel_id, snowflake message_id, command_completion_event_t callback);
+
+	/** Unpin a message */
+	void message_unpin(snowflake channel_id, snowflake message_id, command_completion_event_t callback);
+
 	/** Get a guild */
 	void guild_get(snowflake g, command_completion_event_t callback);
 
 	/** Get a template */
-	void template_get(std::string code, command_completion_event_t callback);
+	void template_get(const std::string &code, command_completion_event_t callback);
 
 	/** Create a new guild based on a template. */
-	void guild_create_from_template(std::string code, std::string name, command_completion_event_t callback);
+	void guild_create_from_template(const std::string &code, const std::string &name, command_completion_event_t callback);
 
 	/** Get guild templates */
 	void guild_templates_get(snowflake guild_id, command_completion_event_t callback);
 
 	/** Creates a template for the guild */
-	void guild_template_create(snowflake guild_id, std::string name, std::string description, command_completion_event_t callback);
+	void guild_template_create(snowflake guild_id, const std::string &name, const std::string &description, command_completion_event_t callback);
 
 	/** Syncs the template to the guild's current state. */
-	void guild_template_sync(snowflake guild_id, std::string code, command_completion_event_t callback);
+	void guild_template_sync(snowflake guild_id, const std::string &code, command_completion_event_t callback);
 
 	/** Modifies the template's metadata. */
-	void guild_template_modify(snowflake guild_id, std::string code, std::string name, std::string description, command_completion_event_t callback);
+	void guild_template_modify(snowflake guild_id, const std::string &code, const std::string &name, const std::string &description, command_completion_event_t callback);
 
 	/** Deletes the template */
-	void guild_template_delete(snowflake guild_id, std:: string code, command_completion_event_t callback);
+	void guild_template_delete(snowflake guild_id, const std::string &code, command_completion_event_t callback);
 
 	/** Create a guild */
 	void guild_create(const class guild &g, command_completion_event_t callback);
@@ -262,6 +280,12 @@ public:
 
 	/** Delete a guild */
 	void guild_delete(snowflake guild_id, command_completion_event_t callback);
+
+	/** Get all emojis for a guild */
+	void guild_emojis_get(snowflake guild_id, command_completion_event_t callback);
+
+	/** Get single guild emoji */
+	void guild_emoji_get(snowflake guild_id, snowflake emoji_id, command_completion_event_t callback);
 
 	/** Get a role */
 	void roles_get(snowflake guild_id, command_completion_event_t callback);
